@@ -197,17 +197,3 @@ This project is ready to be containerized or deployed to any Node + static hosti
 Feel free to open issues or PRs with improvements. Keep changes small and focused, add tests if applicable, and update this README when adding features.
 
 ---
-
-## License
-
-This repository does not include a license file. If you plan to publish, add a `LICENSE` file with the appropriate license.
-
----
-
-If you want, I can also:
-
-- Add example `.env.example` file.
-- Add a lightweight Dockerfile and docker-compose to run the app + MongoDB locally.
-- Improve API documentation with OpenAPI / Swagger.
-
-Tell me which of those you'd like next and I'll add it.
