@@ -25,7 +25,18 @@ router.post("/register", async (req, res) => {
     });
     await user.save();
 
-    const token = generateToken({ id: user._id, email: user.email });
+    let token;
+    try {
+      token = generateToken({ id: user._id, email: user.email });
+    } catch (e) {
+      console.error("generateToken error:", e && e.message ? e.message : e);
+      if (e && e.message === "JWT_SECRET_NOT_SET") {
+        return res
+          .status(500)
+          .json({ error: "Server misconfiguration: JWT_SECRET not set" });
+      }
+      throw e;
+    }
     return res.status(201).json({
       message: "Registered",
       token,
@@ -50,7 +61,18 @@ router.post("/login", async (req, res) => {
     const ok = await bcrypt.compare(password, user.passwordHash);
     if (!ok) return res.status(401).json({ error: "Invalid credentials" });
 
-    const token = generateToken({ id: user._id, email: user.email });
+    let token;
+    try {
+      token = generateToken({ id: user._id, email: user.email });
+    } catch (e) {
+      console.error("generateToken error:", e && e.message ? e.message : e);
+      if (e && e.message === "JWT_SECRET_NOT_SET") {
+        return res
+          .status(500)
+          .json({ error: "Server misconfiguration: JWT_SECRET not set" });
+      }
+      throw e;
+    }
     return res.json({
       message: "Logged in",
       token,
