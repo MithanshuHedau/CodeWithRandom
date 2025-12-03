@@ -29,6 +29,10 @@ export default function SkillGap() {
   const handleAnalyze = async () => {
     if (!targetRole.trim()) return alert("Enter a role");
 
+    // require authentication
+    const token = localStorage.getItem("authToken");
+    if (!token) return alert("Please login first to run the analysis");
+
     setLoading(true);
     setResult(null);
 
@@ -39,7 +43,8 @@ export default function SkillGap() {
       });
       setResult(res.data);
     } catch (err) {
-      alert("Error analyzing skills");
+      const msg = err?.response?.data?.error || "Error analyzing skills";
+      alert(msg);
     }
 
     setLoading(false);
@@ -54,7 +59,9 @@ export default function SkillGap() {
           value={targetRole}
           onChange={(e) => setTargetRole(e.target.value)}
         >
-          <option className="text-black" value="">-- pick a role --</option>
+          <option className="text-black" value="">
+            -- pick a role --
+          </option>
           {roles.map((r) => (
             <option key={r} value={r}>
               {r}

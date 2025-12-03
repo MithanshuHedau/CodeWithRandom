@@ -28,6 +28,10 @@ export default function Roadmap() {
   const fetchRoadmap = async () => {
     if (!role.trim()) return alert("Enter a role");
 
+    // require authentication
+    const token = localStorage.getItem("authToken");
+    if (!token) return alert("Please login first to generate a roadmap");
+
     setLoading(true);
     setRoadmap(null);
 
@@ -35,7 +39,8 @@ export default function Roadmap() {
       const res = await api.post("/roadmap", { targetRole: role });
       setRoadmap(res.data.roadmap);
     } catch (err) {
-      alert("Error loading roadmap");
+      const msg = err?.response?.data?.error || "Error loading roadmap";
+      alert(msg);
     }
 
     setLoading(false);

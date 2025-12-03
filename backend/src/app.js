@@ -9,6 +9,7 @@ const roadmapRoute = require("./routes/roadmapFixed");
 const newsRoute = require("./routes/news");
 const analysisRoute = require("./routes/analysis");
 const rolesRoute = require("./routes/roles");
+const authRoute = require("./routes/auth");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -25,6 +26,7 @@ app.use("/api/roadmap", roadmapRoute);
 app.use("/api/news", newsRoute);
 app.use("/api/analysis", analysisRoute);
 app.use("/api/roles", rolesRoute);
+app.use("/api/auth", authRoute);
 
 // basic health
 app.get("/", (req, res) =>

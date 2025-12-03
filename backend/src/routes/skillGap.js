@@ -1,15 +1,13 @@
 const express = require("express");
 const router = express.Router();
-const {
-  PREDEFINED,
-  RECOMMENDATIONS,
-  findRoleKey,
-} = require("../utils/predefinedRoles");
+const { PREDEFINED, findRoleKey } = require("../utils/predefinedRoles");
+const { jwtAuthMiddleWare } = require("../../jwt");
+const { generateRecommendations } = require("../utils/geminiClient");
 const Analysis = require("../models/Analysis");
 
 // POST /api/skill-gap
 // body: { targetRole: "Backend Developer", currentSkills: ["SQL","Git"] }
-router.post("/", async (req, res) => {
+router.post("/", jwtAuthMiddleWare, async (req, res) => {
   try {
     const { targetRole, currentSkills } = req.body;
     if (!targetRole)
@@ -33,16 +31,40 @@ router.post("/", async (req, res) => {
       (rs) => !matched.some((m) => m.toLowerCase() === rs.toLowerCase())
     );
 
-    // recommendations: pick recommendations for missing + general order
-    const recommendations = missing.map(
-      (ms) =>
-        RECOMMENDATIONS[ms] || `Learn ${ms} via online courses & projects.`
-    );
+    // Try to generate recommendations from Gemini LLM if configured
+    let llmResult = null;
+    try {
+      llmResult = await generateRecommendations(
+        matchedKey,
+        normalizedCurr,
+        missing
+      );
+    } catch (e) {
+      console.error("LLM generation failed:", e && e.message ? e.message : e);
+      llmResult = null;
+    }
 
-    // suggested learning order: naive approach — recommend basics first then advanced (phase idea)
-    const suggestedLearningOrder = [
-      ...missing, // as-is (you could prioritize fundamentals here)
-    ];
+    let recommendations = [];
+    let suggestedLearningOrder = [...missing];
+
+    if (
+      llmResult &&
+      Array.isArray(llmResult.recommendations) &&
+      llmResult.recommendations.length
+    ) {
+      recommendations = llmResult.recommendations;
+      if (
+        Array.isArray(llmResult.suggestedLearningOrder) &&
+        llmResult.suggestedLearningOrder.length
+      ) {
+        suggestedLearningOrder = llmResult.suggestedLearningOrder;
+      }
+    } else {
+      // Fallback: simple auto-generated strings per missing skill
+      recommendations = missing.map(
+        (ms) => `Learn ${ms} via online courses & projects.`
+      );
+    }
 
     const response = {
       role: targetRole,

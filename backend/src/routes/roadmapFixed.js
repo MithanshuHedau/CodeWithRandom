@@ -1,10 +1,11 @@
 const express = require("express");
 const router = express.Router();
 const { PREDEFINED, findRoleKey } = require("../utils/predefinedRoles");
+const { jwtAuthMiddleWare } = require("../../jwt");
 
 // POST /api/roadmap
 // body: { targetRole: "Backend Developer" }
-router.post("/", (req, res) => {
+router.post("/", jwtAuthMiddleWare, (req, res) => {
   try {
     const { targetRole } = req.body;
     if (!targetRole)

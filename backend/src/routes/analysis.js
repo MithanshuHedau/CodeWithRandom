@@ -1,9 +1,10 @@
 const express = require("express");
 const router = express.Router();
 const Analysis = require("../models/Analysis");
+const { jwtAuthMiddleWare } = require("../../jwt");
 
 // POST /api/analysis  -> save an analysis doc
-router.post("/", async (req, res) => {
+router.post("/", jwtAuthMiddleWare, async (req, res) => {
   try {
     const payload = req.body;
     const doc = new Analysis(payload);

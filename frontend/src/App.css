@@ -63,3 +63,13 @@ select.form-input option{
 	.main-grid{grid-template-columns:1fr}
 }
 
+/* Modal and small UI helpers */
+.modal-overlay{position:fixed;inset:0;background:rgba(2,6,23,0.65);display:flex;align-items:center;justify-content:center;z-index:60}
+.modal{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:18px;border-radius:12px;min-width:320px;max-width:420px;color:inherit;border:1px solid rgba(255,255,255,0.04);}
+.tab{background:transparent;border:none;padding:8px 10px;color:var(--muted);cursor:pointer;border-radius:8px}
+.tab-active{background:rgba(255,255,255,0.03);color:inherit;border-radius:8px;padding:8px 10px}
+.btn{background:transparent;color:inherit;border:1px solid rgba(255,255,255,0.06);padding:8px 10px;border-radius:8px;cursor:pointer}
+.btn-ghost{background:transparent;color:var(--muted);border:none;padding:6px 8px;cursor:pointer}
+.form-input.mb-2{margin-bottom:8px}
+.form-textarea.mb-2{margin-bottom:8px}
+

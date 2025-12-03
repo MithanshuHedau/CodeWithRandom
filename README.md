@@ -69,6 +69,22 @@ PORT=5000
 MONGO_URI=mongodb://localhost:27017/career_db
 ```
 
+Required for authentication (JWT):
+
+```
+JWT_SECRET=some_long_random_secret_value
+```
+
+Optional (LLM / Gemini integration):
+
+```
+GEMINI_API_URL=https://your-llm-endpoint.example/v1/generate
+GEMINI_API_KEY=your_api_key_here
+GEMINI_MODEL=gemini-1.0
+```
+
+If you provide `GEMINI_API_URL` and `GEMINI_API_KEY`, the backend will call the configured Gemini-compatible model to dynamically generate recommendations and a suggested learning order for missing skills. If those env vars are not set or the request fails, the backend falls back to a simple auto-generated message per missing skill.
+
 If you use a remote database provide the remote URI instead of the local one.
 
 ---
@@ -211,3 +227,27 @@ If you want, I can also:
 - Improve API documentation with OpenAPI / Swagger.
 
 Tell me which of those you'd like next and I'll add it.
+
+### POST /auth/register
+
+Register a new user.
+
+Request body:
+
+```json
+{ "name": "Full Name", "email": "you@example.com", "password": "secret" }
+```
+
+Response: `{ token, user }` on success.
+
+### POST /auth/login
+
+Login with email and password.
+
+Request body:
+
+```json
+{ "email": "you@example.com", "password": "secret" }
+```
+
+Response: `{ token, user }` on success. Use the token as `Authorization: Bearer <token>` for protected endpoints.
