@@ -16,6 +16,21 @@ const PORT = process.env.PORT || 5000;
 const MONGO_URI =
   process.env.MONGO_URI || "mongodb://localhost:27017/career_db";
 
+// Startup-time config checks to fail fast in production when essential env vars are missing
+if (process.env.NODE_ENV === "production") {
+  if (!process.env.JWT_SECRET) {
+    console.error(
+      "Startup error: JWT_SECRET is not configured (required in production). Exiting."
+    );
+    process.exit(1);
+  }
+  if (!process.env.MONGO_URI) {
+    console.error(
+      "Startup warning: MONGO_URI is not configured. Ensure database is available."
+    );
+  }
+}
+
 app.use(cors());
 app.use(bodyParser.json({ limit: "1mb" }));
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -32,6 +47,16 @@ app.use("/api/auth", authRoute);
 app.get("/", (req, res) =>
   res.send({ ok: true, message: "Career backend running" })
 );
+
+// lightweight health endpoint (safe): reports presence of important config flags without exposing secrets
+app.get("/api/health", (req, res) => {
+  return res.json({
+    ok: true,
+    jwtSecretSet: !!process.env.JWT_SECRET,
+    mongoUriProvided: !!process.env.MONGO_URI,
+    env: process.env.NODE_ENV || "development",
+  });
+});
 
 // connect to MongoDB, then start
 mongoose.set("strictQuery", false);
